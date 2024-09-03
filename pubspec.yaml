@@ -1,0 +1,41 @@
+name: dont_be_sad
+description: "لا تحزن"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.4.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_spinkit: ^5.1.0
+  flutter_islamic_icons: ^1.0.2
+  sqflite:
+  toastification:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logo.png
+    - assets/background.png
+    - assets/db/azkar-db
+
+  fonts:
+    - family: Rubik
+      fonts:
+        - asset: assets/fonts/Rubik-Regular.ttf
+        - asset: assets/fonts/Rubik-Bold.ttf
+          weight: 700
