@@ -13,6 +13,8 @@ dependencies:
   flutter_islamic_icons: ^1.0.2
   sqflite:
   toastification:
+  flutter_animate: ^4.5.0
+  awesome_notifications: ^0.9.3+1
 
 dev_dependencies:
   flutter_test:
@@ -30,6 +32,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logo.png
+    - assets/txt.png
     - assets/background.png
     - assets/db/azkar-db
 

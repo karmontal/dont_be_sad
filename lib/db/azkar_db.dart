@@ -37,8 +37,21 @@ class AzkarDb {
 // open the database
     var db = await openDatabase(path, readOnly: true);
     // openReadOnlyDatabase("assets/azkar-db");
+    return db;
+  }
+
+  dynamic getAzkar() async {
+    var db = await requestSqlDataAsync();
     var _list = await db.rawQuery(
         "Select category.cat_name as cat_name, alarms.cat_name as has_alarm, time_hr,time_mn from category left outer join alarms on category.cat_name = alarms.cat_name");
+    //.query('category', columns: ["cat_name"]);
+    return _list;
+  }
+
+  dynamic getZekr(catName) async {
+    var db = await requestSqlDataAsync();
+    var _list =
+        await db.rawQuery("Select * from azkar where category = '$catName'");
     //.query('category', columns: ["cat_name"]);
     return _list;
   }

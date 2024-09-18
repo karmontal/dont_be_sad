@@ -1,4 +1,6 @@
+import 'package:dont_be_sad/db/azkar_db.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Zekr extends StatefulWidget {
   final String zekrStr;
@@ -9,6 +11,25 @@ class Zekr extends StatefulWidget {
 }
 
 class _ZekrState extends State<Zekr> {
+  Database? db;
+  var list;
+  var indx = 0;
+  final AzkarDb _db = AzkarDb();
+  final PageController _pageController = PageController();
+
+  void _requestSqlData() async {
+    var list = await _db.getZekr(widget.zekrStr);
+    setState(() {
+      list = list;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _requestSqlData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -34,18 +55,197 @@ class _ZekrState extends State<Zekr> {
                 fit: BoxFit.cover, // Makes the image cover the entire container
               ))),
               Container(
-                  padding: const EdgeInsets.only(bottom: 40),
-                  child: ListView(
-                    padding: const EdgeInsets.all(8),
-                    children: const [Text("ورد اليوم الأول")],
-                  )),
+                  padding: const EdgeInsets.only(bottom: 140),
+                  child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: (value) {
+                        setState(() {
+                          indx = value;
+                        });
+                      },
+                      itemCount: list == null ? 0 : list.length,
+                      itemBuilder: (context, index) {
+                        return zekrPage(list[index]);
+                      })),
               Container(
                   padding: const EdgeInsets.all(4),
                   alignment: Alignment.bottomCenter,
-                  child: Text(
-                    "هذا العمل صدقة جارية عن شهدائنا في غزة",
-                    style: TextStyle(color: Colors.lightGreen[800]),
-                  ))
+                  child: Column(children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height - 260,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(10),
+                      height: 80,
+
+                      //padding: EdgeInsets.all(15),
+                      child: Row(
+                        children: [
+                          Container(
+                              height: 80,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.green[400],
+                                  border: Border.all(
+                                      color:
+                                          const Color.fromRGBO(85, 139, 47, 1),
+                                      width: 2),
+                                  borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(20),
+                                      bottomRight: Radius.circular(20))),
+                              width:
+                                  (MediaQuery.of(context).size.width - 30) / 3,
+                              child: TextButton(
+                                onPressed: () {
+                                  if (indx > 0) {
+                                    indx--;
+                                    _pageController.animateToPage(
+                                      indx,
+                                      duration:
+                                          const Duration(milliseconds: 350),
+                                      curve: Curves.easeIn,
+                                    );
+                                  }
+                                },
+                                child: const Text(
+                                  "<<",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              )),
+                          // Container(
+                          //     height: 80,
+                          //     alignment: Alignment.center,
+                          //     decoration: BoxDecoration(
+                          //       color: Colors.green[300],
+                          //       border: Border.all(
+                          //           color: const Color.fromRGBO(85, 139, 47, 1),
+                          //           width: 2),
+                          //     ),
+                          //     width:
+                          //         (MediaQuery.of(context).size.width - 30) / 5,
+                          //     child: TextButton(
+                          //       onPressed: () {
+                          //         if (indx > 0) {
+                          //           indx--;
+                          //           _pageController.animateToPage(
+                          //             indx,
+                          //             duration:
+                          //                 const Duration(milliseconds: 350),
+                          //             curve: Curves.easeIn,
+                          //           );
+                          //         }
+                          //       },
+                          //       child: Text(
+                          //         "<",
+                          //         style: TextStyle(
+                          //             fontSize: 20,
+                          //             fontWeight: FontWeight.bold,
+                          //             color: Colors.white),
+                          //       ),
+                          //     )),
+                          Container(
+                            height: 80,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.green[900],
+                              border: Border.all(
+                                  color: const Color.fromRGBO(85, 139, 47, 1),
+                                  width: 2),
+                            ),
+                            width: (MediaQuery.of(context).size.width - 40) / 3,
+                            child: Text(
+                              list == null
+                                  ? "0"
+                                  : list[indx]["count"].toString(),
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          ),
+                          // Container(
+                          //     height: 80,
+                          //     alignment: Alignment.center,
+                          //     decoration: BoxDecoration(
+                          //       color: Colors.green[300],
+                          //       border: Border.all(
+                          //           color: const Color.fromRGBO(85, 139, 47, 1),
+                          //           width: 2),
+                          //     ),
+                          //     width:
+                          //         (MediaQuery.of(context).size.width - 30) / 5,
+                          //     child: TextButton(
+                          //       onPressed: () {
+                          //         if (list[indx]["count"] > 0) {
+                          //           //setState(() {
+                          //           //int s = list[indx]["count"];
+                          //           list[indx]["count"] =
+                          //               list[indx]["count"] - 1;
+                          //           //});
+                          //           print(list[indx]["count"]);
+                          //         } else if (indx < list.length - 1) {
+                          //           indx--;
+                          //           _pageController.animateToPage(
+                          //             indx,
+                          //             duration:
+                          //                 const Duration(milliseconds: 350),
+                          //             curve: Curves.easeIn,
+                          //           );
+                          //         }
+                          //       },
+                          //       child: Text(
+                          //         ">",
+                          //         style: TextStyle(
+                          //             fontSize: 20,
+                          //             fontWeight: FontWeight.bold,
+                          //             color: Colors.white),
+                          //       ),
+                          //     )),
+                          Container(
+                              height: 80,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.green[400],
+                                  border: Border.all(
+                                      color:
+                                          const Color.fromRGBO(85, 139, 47, 1),
+                                      width: 2),
+                                  borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      bottomLeft: Radius.circular(20))),
+                              width:
+                                  (MediaQuery.of(context).size.width - 30) / 3,
+                              child: TextButton(
+                                onPressed: () {
+                                  if (indx < list.length - 1) {
+                                    indx++;
+                                    _pageController.animateToPage(
+                                      indx,
+                                      duration:
+                                          const Duration(milliseconds: 350),
+                                      curve: Curves.easeIn,
+                                    );
+                                  }
+                                },
+                                child: const Text(
+                                  ">>",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ))
+                        ],
+                      ),
+                    ),
+                    Text(
+                      "هذا العمل صدقة جارية عن شهدائنا في غزة",
+                      style: TextStyle(color: Colors.lightGreen[800]),
+                    )
+                  ]))
             ])
             //Center(
 
@@ -56,5 +256,40 @@ class _ZekrState extends State<Zekr> {
             // ),
             //),
             ));
+  }
+
+  Widget zekrPage(item) {
+    return Container(
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          border:
+              Border.all(color: const Color.fromRGBO(85, 139, 47, 1), width: 2),
+          borderRadius: BorderRadius.circular(40)),
+      padding: const EdgeInsets.all(15),
+      alignment: Alignment.center,
+      child: ListView(children: [
+        const SizedBox(
+          height: 20,
+        ),
+        Text(
+          item["zekr"],
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              fontSize: 18, fontFamily: "Rubik", color: Colors.lightGreen[800]),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Text(
+          item["description"] + " - " + item["reference"],
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              fontSize: 16,
+              fontFamily: "Rubik",
+              fontStyle: FontStyle.italic,
+              color: Colors.lightGreen[700]),
+        )
+      ]),
+    );
   }
 }

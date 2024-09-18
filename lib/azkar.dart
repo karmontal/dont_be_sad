@@ -20,7 +20,7 @@ class _AzkarState extends State<Azkar> {
   final AzkarDb _db = AzkarDb();
 
   void _requestSqlData() async {
-    var _list = await _db.requestSqlDataAsync();
+    var _list = await _db.getAzkar();
     setState(() {
       list = _list;
     });
