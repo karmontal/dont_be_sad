@@ -4,7 +4,6 @@ import 'package:dont_be_sad/zekr.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'db/azkar_db.dart';
-
 import 'package:sqflite/sqlite_api.dart';
 
 class Azkar extends StatefulWidget {
@@ -18,6 +17,7 @@ class _AzkarState extends State<Azkar> {
   Database? db;
   var list;
   final AzkarDb _db = AzkarDb();
+  final TextEditingController srch = TextEditingController();
 
   void _requestSqlData() async {
     var _list = await _db.getAzkar();
@@ -39,7 +39,6 @@ class _AzkarState extends State<Azkar> {
         child: Scaffold(
             backgroundColor: Colors.grey[100],
             appBar: AppBar(
-                //leading: Image.asset("assets/logo.png"),
                 title: Text('أدعية وأذكار',
                     style: TextStyle(
                         fontFamily: 'Rubik',
@@ -57,15 +56,31 @@ class _AzkarState extends State<Azkar> {
                 fit: BoxFit.cover, // Makes the image cover the entire container
               ))),
               Container(
-                padding: const EdgeInsets.only(bottom: 40),
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: list == null ? 0 : list.length,
-                  itemBuilder: (context, index) {
-                    return listItem(list[index], context);
-                  },
-                ),
-              ),
+                  padding: const EdgeInsets.only(bottom: 40),
+                  child:
+                      // Column(children: [
+                      //   Row(
+                      //     children: [
+                      //       Container(
+                      //           padding: EdgeInsets.all(5),
+                      //           child: TextField(
+                      //             controller: srch,
+                      //           )),
+                      //       IconButton(
+                      //         icon: Icon(Icons.search),
+                      //         onPressed: () {},
+                      //       ),
+                      //     ],
+                      //   ),
+                      ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: list == null ? 0 : list.length,
+                    itemBuilder: (context, index) {
+                      return listItem(list[index], context);
+                    },
+                  )
+                  // ]),
+                  ),
               Container(
                   padding: const EdgeInsets.all(4),
                   alignment: Alignment.bottomCenter,
@@ -73,16 +88,7 @@ class _AzkarState extends State<Azkar> {
                     "هذا العمل صدقة جارية عن شهدائنا في غزة",
                     style: TextStyle(color: Colors.lightGreen[800]),
                   ))
-            ])
-            //Center(
-
-            // Text(
-            //   'مرحبا بك في تطبيق لا تحزن!',
-            //   style: TextStyle(
-            //       fontSize: 24, fontFamily: "Rubik", color: Colors.green[800]),
-            // ),
-            //),
-            ));
+            ])));
   }
 
   Widget listItem(item, context) {
@@ -91,7 +97,7 @@ class _AzkarState extends State<Azkar> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => Zekr(
-                zekrStr: item["cat_name"],
+                zekrStr: item["category"],
               ),
             ),
           );
@@ -112,7 +118,7 @@ class _AzkarState extends State<Azkar> {
             Container(
                 width: MediaQuery.of(context).size.width - 140,
                 child: Text(
-                  item["cat_name"],
+                  item["category"],
                   softWrap: true,
                   overflow: TextOverflow.fade,
                   maxLines: 2,
@@ -121,16 +127,6 @@ class _AzkarState extends State<Azkar> {
                       fontFamily: "Rubik",
                       color: Color.fromRGBO(46, 125, 50, 1)),
                 )),
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  item["has_alarm"] == null
-                      ? Icons.alarm_add_outlined
-                      : Icons.alarm_on_outlined,
-                  color: item["has_alarm"] == null
-                      ? const Color.fromARGB(255, 192, 192, 192)
-                      : const Color.fromRGBO(46, 125, 50, 1),
-                ))
           ]),
         ));
   }

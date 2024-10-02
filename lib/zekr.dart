@@ -13,14 +13,18 @@ class Zekr extends StatefulWidget {
 class _ZekrState extends State<Zekr> {
   Database? db;
   var list;
+  late List<int> cnts = List.empty(growable: true);
   var indx = 0;
   final AzkarDb _db = AzkarDb();
   final PageController _pageController = PageController();
 
   void _requestSqlData() async {
-    var list = await _db.getZekr(widget.zekrStr);
+    var _list = await _db.getZekr(widget.zekrStr);
     setState(() {
-      list = list;
+      list = _list;
+      for (var element in list) {
+        cnts.add(element["count"]);
+      }
     });
   }
 
@@ -55,25 +59,25 @@ class _ZekrState extends State<Zekr> {
                 fit: BoxFit.cover, // Makes the image cover the entire container
               ))),
               Container(
-                  padding: const EdgeInsets.only(bottom: 140),
-                  child: PageView.builder(
-                      controller: _pageController,
-                      onPageChanged: (value) {
-                        setState(() {
-                          indx = value;
-                        });
-                      },
-                      itemCount: list == null ? 0 : list.length,
-                      itemBuilder: (context, index) {
-                        return zekrPage(list[index]);
-                      })),
-              Container(
                   padding: const EdgeInsets.all(4),
                   alignment: Alignment.bottomCenter,
                   child: Column(children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height - 260,
-                    ),
+                    // SizedBox(
+                    //   height: MediaQuery.of(context).size.height - 240,
+                    // ),
+                    Expanded(
+                        //padding: const EdgeInsets.only(bottom: 140),
+                        child: PageView.builder(
+                            controller: _pageController,
+                            onPageChanged: (value) {
+                              setState(() {
+                                indx = value;
+                              });
+                            },
+                            itemCount: list == null ? 0 : list.length,
+                            itemBuilder: (context, index) {
+                              return zekrPage(list[index]);
+                            })),
                     Container(
                       margin: const EdgeInsets.all(10),
                       height: 80,
@@ -115,37 +119,6 @@ class _ZekrState extends State<Zekr> {
                                       color: Colors.white),
                                 ),
                               )),
-                          // Container(
-                          //     height: 80,
-                          //     alignment: Alignment.center,
-                          //     decoration: BoxDecoration(
-                          //       color: Colors.green[300],
-                          //       border: Border.all(
-                          //           color: const Color.fromRGBO(85, 139, 47, 1),
-                          //           width: 2),
-                          //     ),
-                          //     width:
-                          //         (MediaQuery.of(context).size.width - 30) / 5,
-                          //     child: TextButton(
-                          //       onPressed: () {
-                          //         if (indx > 0) {
-                          //           indx--;
-                          //           _pageController.animateToPage(
-                          //             indx,
-                          //             duration:
-                          //                 const Duration(milliseconds: 350),
-                          //             curve: Curves.easeIn,
-                          //           );
-                          //         }
-                          //       },
-                          //       child: Text(
-                          //         "<",
-                          //         style: TextStyle(
-                          //             fontSize: 20,
-                          //             fontWeight: FontWeight.bold,
-                          //             color: Colors.white),
-                          //       ),
-                          //     )),
                           Container(
                             height: 80,
                             alignment: Alignment.center,
@@ -159,51 +132,13 @@ class _ZekrState extends State<Zekr> {
                             child: Text(
                               list == null
                                   ? "0"
-                                  : list[indx]["count"].toString(),
+                                  : "${cnts[indx]}/${list[indx]["count"]}",
                               style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
                             ),
                           ),
-                          // Container(
-                          //     height: 80,
-                          //     alignment: Alignment.center,
-                          //     decoration: BoxDecoration(
-                          //       color: Colors.green[300],
-                          //       border: Border.all(
-                          //           color: const Color.fromRGBO(85, 139, 47, 1),
-                          //           width: 2),
-                          //     ),
-                          //     width:
-                          //         (MediaQuery.of(context).size.width - 30) / 5,
-                          //     child: TextButton(
-                          //       onPressed: () {
-                          //         if (list[indx]["count"] > 0) {
-                          //           //setState(() {
-                          //           //int s = list[indx]["count"];
-                          //           list[indx]["count"] =
-                          //               list[indx]["count"] - 1;
-                          //           //});
-                          //           print(list[indx]["count"]);
-                          //         } else if (indx < list.length - 1) {
-                          //           indx--;
-                          //           _pageController.animateToPage(
-                          //             indx,
-                          //             duration:
-                          //                 const Duration(milliseconds: 350),
-                          //             curve: Curves.easeIn,
-                          //           );
-                          //         }
-                          //       },
-                          //       child: Text(
-                          //         ">",
-                          //         style: TextStyle(
-                          //             fontSize: 20,
-                          //             fontWeight: FontWeight.bold,
-                          //             color: Colors.white),
-                          //       ),
-                          //     )),
                           Container(
                               height: 80,
                               alignment: Alignment.center,
@@ -259,37 +194,59 @@ class _ZekrState extends State<Zekr> {
   }
 
   Widget zekrPage(item) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          border:
-              Border.all(color: const Color.fromRGBO(85, 139, 47, 1), width: 2),
-          borderRadius: BorderRadius.circular(40)),
-      padding: const EdgeInsets.all(15),
-      alignment: Alignment.center,
-      child: ListView(children: [
-        const SizedBox(
-          height: 20,
-        ),
-        Text(
-          item["zekr"],
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: 18, fontFamily: "Rubik", color: Colors.lightGreen[800]),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Text(
-          item["description"] + " - " + item["reference"],
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: 16,
-              fontFamily: "Rubik",
-              fontStyle: FontStyle.italic,
-              color: Colors.lightGreen[700]),
-        )
-      ]),
-    );
+    return TextButton(
+        onPressed: () {
+          if (cnts[indx] == 1 || cnts[indx] == 0) {
+            if (indx < list.length - 1) {
+              setState(() {
+                cnts[indx] = 0;
+              });
+              indx++;
+              _pageController.animateToPage(
+                indx,
+                duration: const Duration(milliseconds: 350),
+                curve: Curves.easeIn,
+              );
+            }
+          } else {
+            setState(() {
+              cnts[indx] = cnts[indx] - 1;
+            });
+          }
+        },
+        child: Container(
+          margin: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              border: Border.all(
+                  color: const Color.fromRGBO(85, 139, 47, 1), width: 2),
+              borderRadius: BorderRadius.circular(40)),
+          padding: const EdgeInsets.all(15),
+          alignment: Alignment.center,
+          child: ListView(children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              item["zekr"],
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontFamily: "Rubik",
+                  color: Colors.lightGreen[800]),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              item["description"] + " - " + item["reference"],
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: "Rubik",
+                  fontStyle: FontStyle.italic,
+                  color: Colors.lightGreen[700]),
+            )
+          ]),
+        ));
   }
 }
